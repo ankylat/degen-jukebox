@@ -10,19 +10,9 @@ const fs = require("fs").promises;
 const path = require("path");
 const bodyParser = require("body-parser");
 const prisma = require("./lib/prismaClient");
-const { scheduleReminders, sendCast } = require("./lib/writingReminder");
-const {
-  checkAndUpdateAnkys,
-  checkAndUpdateMidjourneyOnAFrameAnkys,
-  checkAndUpdateGeneratedAnkys,
-  checkAllAnkys,
-  theElectronicMadness,
-} = require("./lib/ankys");
-const { TypedEthereumSigner } = require("arbundles");
 const rateLimit = require("express-rate-limit");
 
 // Internal Modules
-const { uploadToIrys } = require("./lib/irys");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -30,14 +20,9 @@ const limiter = rateLimit({
 });
 
 // Routes
-const blockchainRoutes = require("./routes/blockchain");
-const aiRoutes = require("./routes/ai");
-const notebooksRoutes = require("./routes/notebooks");
-const farcasterRoutes = require("./routes/farcaster");
-const farcasterFramesRoutes = require("./routes/farcaster-frames");
-const manaRoutes = require("./routes/mana");
-const userRoutes = require("./routes/user");
-const midjourneyRoutes = require("./routes/midjourney");
+const jukeboxRoute = require("./routes/jukebox-frame");
+const apiRoute = require("./routes/api");
+const farcasterRoute = require("./routes/farcaster");
 
 const app = express();
 app.use(
@@ -56,67 +41,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/blockchain", blockchainRoutes);
-app.use("/ai", aiRoutes);
-app.use("/notebooks", notebooksRoutes);
-app.use("/farcaster", farcasterRoutes);
-app.use("/farcaster-frames", farcasterFramesRoutes);
-app.use("/midjourney", midjourneyRoutes);
-app.use("/mana", manaRoutes);
-app.use("/user", userRoutes);
-
-// scheduleReminders();
-
-// schedule.scheduleJob("*/5 * * * *", checkAndUpdateAnkys);
-schedule.scheduleJob("*/5 * * * *", checkAndUpdateGeneratedAnkys);
-// checkAndUpdateMidjourneyOnAFrameAnkys();
-// checkAndUpdateGeneratedAnkys();
+app.use("/jukebox", jukeboxRoute);
+app.use("/api", apiRoute);
+app.use("/farcaster", farcasterRoute);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Anky Backend!");
-});
-
-app.get("/publicKey", async (req, res) => {
-  async function serverInit() {
-    const key = process.env.PRIVATE_KEY; // your private key;
-    if (!key) throw new Error("Private key is undefined!");
-    const signer = new TypedEthereumSigner(key);
-    return signer.publicKey;
-  }
-
-  const response = await serverInit();
-  const pubKey = response.toString("hex");
-  return res.status(200).json({ pubKey: pubKey });
-});
-
-app.post("/signData", async (req, res) => {
-  async function signDataOnServer(signatureData) {
-    const key = process.env.PRIVATE_KEY; // your private key
-    if (!key) throw new Error("Private key is undefined!");
-    const signer = new TypedEthereumSigner(key);
-    return Buffer.from(await signer.sign(signatureData));
-  }
-  const body = JSON.parse(req.body);
-  const signatureData = Buffer.from(body.signatureData, "hex");
-  const signature = await signDataOnServer(signatureData);
-  res.status(200).json({ signature: signature.toString("hex") });
-});
-
-app.post("/upload-writing", async (req, res) => {
-  try {
-    const { text } = req.body;
-
-    if (!text) {
-      return res.status(400).json({ error: "Invalid text" });
-    }
-
-    const cid = await uploadToIrys(text);
-
-    res.status(201).json({ cid });
-  } catch (error) {
-    console.error("An error occurred while handling your request:", error);
-    res.status(500).send("Internal Server Error");
-  }
+  res.send("Welcome to the degen jukebox!");
 });
 
 app.listen(PORT, () => {

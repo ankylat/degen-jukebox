@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const prisma = require("../lib/prismaClient");
-const { getCastsByFid } = require("../lib/blockchain/farcaster");
 const { mnemonicToAccount } = require("viem/accounts");
 const checkIfLoggedInMiddleware = require("../middleware/checkIfLoggedIn");
 const {
