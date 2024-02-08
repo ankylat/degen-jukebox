@@ -52,7 +52,7 @@ router.get("/music", async (req, res) => {
 
     res.json({
       success: true,
-      data: [],
+      data: music,
     });
     return res.status(200).json({ jukeboxMusic: music });
   } catch (error) {
