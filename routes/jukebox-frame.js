@@ -29,7 +29,7 @@ router.get("/", async (req, res) => {
       <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/jukebox.png">
 
       <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
-      <meta name="fc:frame:button:1" content="what's live?">
+      <meta name="fc:frame:button:1" content="time to vibe">
 
     </head>
     </html>
@@ -90,7 +90,7 @@ router.post("/", async (req, res) => {
       <meta name="fc:frame:button:1" content="listen live"> 
       <meta name="fc:frame:button:1:action" content="link">   
       <meta name="fc:frame:button:1:target" content="${recommendationLink}">     
-      <meta name="fc:frame:button:2" content="live queue">   
+      <meta name="fc:frame:button:2" content="queue">   
       <meta name="fc:frame:button:3" content="add to queue"> 
       <meta name="fc:frame:button:3:action" content="link">   
       <meta name="fc:frame:button:3:target" content="${process.env.FRONTEND_ROUTE}/queue">    
@@ -116,7 +116,7 @@ router.post("/", async (req, res) => {
     <meta name="fc:frame:button:1" content="listen live"> 
     <meta name="fc:frame:button:1:action" content="link">   
     <meta name="fc:frame:button:1:target" content="${recommendationLink}">     
-    <meta name="fc:frame:button:2" content="live queue">   
+    <meta name="fc:frame:button:2" content="queue">   
     <meta name="fc:frame:button:3" content="add to queue"> 
     <meta name="fc:frame:button:3:action" content="link">   
     <meta name="fc:frame:button:3:target" content="${
