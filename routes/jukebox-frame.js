@@ -89,7 +89,7 @@ router.post("/", async (req, res) => {
       <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
       <meta name="fc:frame:button:1" content="listen live"> 
       <meta name="fc:frame:button:1:action" content="link">   
-      <meta name="fc:frame:button:1:target" content="${recommendationLink}">     
+      <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}/live">     
       <meta name="fc:frame:button:2" content="queue">   
       <meta name="fc:frame:button:3" content="add to queue"> 
       <meta name="fc:frame:button:3:action" content="link">   
@@ -105,27 +105,22 @@ router.post("/", async (req, res) => {
   <head>
     <title>jukebox</title>
     <meta property="og:title" content="jukebox">
-    <meta property="og:image" content="${
-      ogImage || "https://jpfraneto.github.io/images/jukebox.png"
-    }">
+    <meta property="og:image" content="https://jpfraneto.github.io/images/queue.png">
     <meta name="fc:frame" content="vNext">
-    <meta name="fc:frame:image" content="${
-      ogImage || "https://jpfraneto.github.io/images/jukebox.png"
-    }">
+    <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/queue.png">
     <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
     <meta name="fc:frame:button:1" content="listen live"> 
     <meta name="fc:frame:button:1:action" content="link">   
-    <meta name="fc:frame:button:1:target" content="${recommendationLink}">     
+    <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}/live">     
     <meta name="fc:frame:button:2" content="queue">   
     <meta name="fc:frame:button:3" content="add to queue"> 
     <meta name="fc:frame:button:3:action" content="link">   
-    <meta name="fc:frame:button:3:target" content="${
-      process.env.FRONTEND_ROUTE
-    }/queue">    
+    <meta name="fc:frame:button:3:target" content="${process.env.FRONTEND_ROUTE}/queue">    
     </head>
   </html>
     `);
   } catch (error) {
+    console.log("there was an error");
     return res.status(200).send(`
     <!DOCTYPE html>
     <html>
