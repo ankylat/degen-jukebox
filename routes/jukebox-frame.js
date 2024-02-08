@@ -53,7 +53,7 @@ async function fetchOGData(url) {
     };
   } catch (error) {
     console.error("Error fetching OG data:", error);
-    return {};
+    return { ogImage: "", ogTitle: "" };
   }
 }
 
