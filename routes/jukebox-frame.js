@@ -58,19 +58,9 @@ async function fetchOGData(url) {
 }
 
 router.post("/", async (req, res) => {
-  let imageUrl, ogTitle, ogImage;
   const fullUrl = req.protocol + "://" + req.get("host");
   const fid = req.body.untrustedData.fid.toString();
   const buttonIndex = req.body.untrustedData.buttonIndex.toString();
-  const recommendationLink = "https://youtu.be/2h1h1JdaWGk";
-  try {
-    const response = await fetchOGData(recommendationLink);
-    ogImage = response.ogImage;
-    ogTitle = response.ogTitle;
-  } catch (error) {
-    ogImage = "";
-    ogTitle = "";
-  }
 
   console.log("IN HEREA", buttonIndex);
 

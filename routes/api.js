@@ -2,6 +2,23 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const prisma = require("../lib/prismaClient");
+const { soundAPI } = require("../lib/soundxyz");
+const ethers = require("ethers");
+const SOUNDXYZ_ABI = require("../abis/SOUND_XYZ.json");
+
+const contractAddress = "0x000000000001A36777f9930aAEFf623771b13e70";
+
+const privateKey = process.env.PRIVATE_KEY;
+
+// // Initialize provider and wallet
+const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_RPC_URL);
+const wallet = new ethers.Wallet(privateKey, provider);
+
+const soundxyzContract = new ethers.Contract(
+  contractAddress,
+  SOUNDXYZ_ABI,
+  wallet
+);
 
 const music = [
   {
@@ -32,9 +49,15 @@ router.get("/music", async (req, res) => {
     console.log(
       "here i should fetch all the music available on the wallet that is connected"
     );
+    const ownedNFTs = await soundxyzContract.balanceOf();
+    console.log("the owned nfts are: ", ownedNFTs);
+    res.json({
+      success: true,
+      data: [],
+    });
     return res.status(200).json({ jukeboxMusic: music });
   } catch (error) {
-    console.log("there was an error fetching the jukebox");
+    console.log("there was an error fetching the jukebox", error);
     res.status(401).json({ message: "there was an error" });
   }
 });
