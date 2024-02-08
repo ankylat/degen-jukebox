@@ -63,9 +63,15 @@ router.post("/", async (req, res) => {
   const fid = req.body.untrustedData.fid.toString();
   const buttonIndex = req.body.untrustedData.buttonIndex.toString();
   const recommendationLink = "https://youtu.be/2h1h1JdaWGk";
-  const response = await fetchOGData(recommendationLink);
-  ogImage = response.ogImage;
-  ogTitle = response.ogTitle;
+  try {
+    const response = await fetchOGData(recommendationLink);
+    ogImage = response.ogImage;
+    ogTitle = response.ogTitle;
+  } catch (error) {
+    ogImage = "";
+    ogTitle = "";
+  }
+
   console.log("IN HEREA", buttonIndex);
 
   try {
@@ -104,7 +110,7 @@ router.post("/", async (req, res) => {
     }">
     <meta name="fc:frame" content="vNext">
     <meta name="fc:frame:image" content="${
-      ogImage || "https://jpfraneto.github.io/images/ravecaster.png"
+      ogImage || "https://jpfraneto.github.io/images/jukebox.png"
     }">
     <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
     <meta name="fc:frame:button:1" content="listen live"> 
