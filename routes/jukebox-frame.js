@@ -73,9 +73,9 @@ router.post("/", async (req, res) => {
     <head>
       <title>jukebox</title>
       <meta property="og:title" content="jukebox">
-      <meta property="og:image" content="https://jpfraneto.github.io/images/queue.png">
+      <meta property="og:image" content="https://jpfraneto.github.io/images/jukebox2.png">
       <meta name="fc:frame" content="vNext">
-      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/queue.png">
+      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/jukebox2.png">
       <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
       <meta name="fc:frame:button:1" content="listen live"> 
       <meta name="fc:frame:button:1:action" content="link">   
@@ -95,9 +95,9 @@ router.post("/", async (req, res) => {
   <head>
     <title>jukebox</title>
     <meta property="og:title" content="jukebox">
-    <meta property="og:image" content="https://jpfraneto.github.io/images/queue.png">
+    <meta property="og:image" content="https://jpfraneto.github.io/images/jukebox2.png">
     <meta name="fc:frame" content="vNext">
-    <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/queue.png">
+    <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/jukebox2.png">
     <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
     <meta name="fc:frame:button:1" content="listen live"> 
     <meta name="fc:frame:button:1:action" content="link">   
