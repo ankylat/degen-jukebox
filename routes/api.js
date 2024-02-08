@@ -49,8 +49,7 @@ router.get("/music", async (req, res) => {
     console.log(
       "here i should fetch all the music available on the wallet that is connected"
     );
-    const ownedNFTs = await soundxyzContract.balanceOf();
-    console.log("the owned nfts are: ", ownedNFTs);
+
     res.json({
       success: true,
       data: [],

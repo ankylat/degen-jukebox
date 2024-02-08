@@ -88,7 +88,7 @@ router.post("/", async (req, res) => {
     </html>
       `);
     }
-    console.log("this is running.");
+    console.log("this is running,", process.env.FRONTEND_ROUTE);
     return res.status(200).send(`
   <!DOCTYPE html>
   <html>
