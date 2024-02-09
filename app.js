@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 app.use("/jukebox", jukeboxRoute);
 app.use("/api", apiRoute);
 app.use("/farcaster", farcasterRoute);
-console.log("right before calling the big bang function");
+console.log("right before calling the check system function");
 theSource.checkSystem();
 
 app.get("/", (req, res) => {

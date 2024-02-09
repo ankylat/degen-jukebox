@@ -106,7 +106,7 @@ router.post("/", async (req, res) => {
       <meta name="fc:frame:post_url" content="${imageUrl}">
       <meta name="fc:frame:button:1" content="listen live"> 
       <meta name="fc:frame:button:1:action" content="link">   
-      <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}/live">     
+      <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
       <meta name="fc:frame:button:2" content="queue">   
       <meta name="fc:frame:button:3" content="add to queue"> 
       <meta name="fc:frame:button:3:action" content="link">   
@@ -115,7 +115,6 @@ router.post("/", async (req, res) => {
     </html>
       `);
     }
-    console.log("this is running,", process.env.FRONTEND_ROUTE);
     return res.status(200).send(`
   <!DOCTYPE html>
   <html>
@@ -128,7 +127,7 @@ router.post("/", async (req, res) => {
     <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
     <meta name="fc:frame:button:1" content="listen live"> 
     <meta name="fc:frame:button:1:action" content="link">   
-    <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}/live">     
+    <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
     <meta name="fc:frame:button:2" content="queue">   
     <meta name="fc:frame:button:3" content="add to queue"> 
     <meta name="fc:frame:button:3:action" content="link">   
