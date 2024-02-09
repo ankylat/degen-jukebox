@@ -88,11 +88,7 @@ router.get("/music", async (req, res) => {
       "here i should fetch all the music available on the wallet that is connected"
     );
 
-    res.json({
-      success: true,
-      data: music,
-    });
-    return res.status(200).json({ jukeboxMusic: music });
+    return res.status(200).json({ success: true, jukeboxMusic: music });
   } catch (error) {
     console.log("there was an error fetching the jukebox", error);
     res.status(401).json({ message: "there was an error" });
