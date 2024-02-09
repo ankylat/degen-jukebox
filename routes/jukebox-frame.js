@@ -71,9 +71,9 @@ router.get("/", async (req, res) => {
     <head>
       <title>degen jukebox</title>
       <meta property="og:title" content="degen jukebox">
-      <meta property="og:image" content="https://jpfraneto.github.io/images/degen-radio.jpeg">
+      <meta property="og:image" content="https://jpfraneto.github.io/images/degen-jukebox.png">
       <meta name="fc:frame" content="vNext">
-      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/degen-radio.jpeg">
+      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/degen-jukebox.png">
 
       <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
       <meta name="fc:frame:button:1" content="time to vibe">

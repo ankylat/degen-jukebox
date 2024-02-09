@@ -26,6 +26,7 @@ model Recommendation {
   status                 String?
   startingRecommendationTimestamp DateTime?
   endingRecommendationTimestamp  DateTime?
+  timestampDifference    Int?
   bidAmount              Int              @default(0)
   duration               Int
   playsCount             Int              @default(0) // Count of how many times it has been played
