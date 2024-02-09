@@ -52,11 +52,9 @@ router.get("/podium-image", async (req, res) => {
     const buffer = canvas.toBuffer();
 
     // Send the image in the response
-    res.writeHead(200, {
-      "Content-Type": "image/png",
-      "Content-Length": buffer.length,
-    });
-    res.end(buffer);
+    res.setHeader("Content-Type", "image/png");
+    res.setHeader("Cache-Control", "max-age=10");
+    res.send(buffer);
   } catch (error) {
     console.log("there was an error creating the image", error);
   }
