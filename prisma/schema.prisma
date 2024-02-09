@@ -3,10 +3,44 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgresql" // or your chosen database provider, such as "mysql" or "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  fid                           String            @id
+  fid                    String            @id 
+  active                 Boolean           @default(false)
+  activeToken            String?
+  activeExpires          DateTime?
+  recommendations        Recommendation[] 
 }
+
+model Recommendation {
+  id                     String           @id @default(uuid())
+  author                 User             @relation(fields: [authorId], references: [fid])
+  authorId               String
+  name                   String
+  recommendationDate     DateTime         @default(now())
+  url                    String
+  youtubeID              String?
+  status                 String?
+  startingRecommendationTimestamp DateTime?
+  endingRecommendationTimestamp  DateTime?
+  bidAmount              Int              @default(0)
+  duration               Int
+  playsCount             Int              @default(0) // Count of how many times it has been played
+  queueItems             QueueItem[]      // Relations to queue items
+  placeholderImageUrl    String?     // Relations to queue items
+
+}
+
+model QueueItem {
+  id                     String           @id @default(uuid())
+  recommendation         Recommendation   @relation(fields: [recommendationId], references: [id])
+  recommendationId       String
+  bidAmount              Int              // Amount of 'currency' bid to prioritize this item in the queue
+  submittedAt            DateTime         @default(now())
+  playedAt               DateTime?        // When this item was played
+  status                 String           @default("queued")
+}
+

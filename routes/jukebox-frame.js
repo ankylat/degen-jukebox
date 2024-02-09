@@ -61,21 +61,27 @@ router.post("/", async (req, res) => {
   const fullUrl = req.protocol + "://" + req.get("host");
   const fid = req.body.untrustedData.fid.toString();
   const buttonIndex = req.body.untrustedData.buttonIndex.toString();
-
-  console.log("IN HEREA", buttonIndex);
-
+  const presentRecommendation = await prisma.recommendation.findFirst({
+    where: { status: "present" },
+  });
   try {
     if (buttonIndex == "2") {
       console.log("the button is 2");
+      const podium = await prisma.recommendation.findMany({
+        where: { status: "future" },
+        orderBy: { bidAmount: "desc" },
+        take: 3,
+      });
+      console.log("the podium is:", podium);
       return res.status(200).send(`
     <!DOCTYPE html>
     <html>
     <head>
       <title>jukebox</title>
       <meta property="og:title" content="jukebox">
-      <meta property="og:image" content="https://jpfraneto.github.io/images/jukebox2.png">
+      <meta property="og:image" content="">
       <meta name="fc:frame" content="vNext">
-      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/jukebox2.png">
+      <meta name="fc:frame:image" content="">
       <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
       <meta name="fc:frame:button:1" content="listen live"> 
       <meta name="fc:frame:button:1:action" content="link">   
@@ -95,9 +101,9 @@ router.post("/", async (req, res) => {
   <head>
     <title>jukebox</title>
     <meta property="og:title" content="jukebox">
-    <meta property="og:image" content="https://jpfraneto.github.io/images/jukebox2.png">
+    <meta property="og:image" content="${presentRecommendation.placeholderImageUrl}">
     <meta name="fc:frame" content="vNext">
-    <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/jukebox2.png">
+    <meta name="fc:frame:image" content="${presentRecommendation.placeholderImageUrl}">
     <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
     <meta name="fc:frame:button:1" content="listen live"> 
     <meta name="fc:frame:button:1:action" content="link">   

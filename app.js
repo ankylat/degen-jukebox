@@ -11,6 +11,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const prisma = require("./lib/prismaClient");
 const rateLimit = require("express-rate-limit");
+const theSource = require("./lib/theSource");
 
 // Internal Modules
 
@@ -44,6 +45,8 @@ app.use((req, res, next) => {
 app.use("/jukebox", jukeboxRoute);
 app.use("/api", apiRoute);
 app.use("/farcaster", farcasterRoute);
+console.log("right before calling the big bang function");
+theSource.checkSystem();
 
 app.get("/", (req, res) => {
   res.send("Welcome to the degen jukebox!");
