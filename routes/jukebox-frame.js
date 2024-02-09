@@ -88,6 +88,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const fullUrl = req.protocol + "://" + req.get("host");
   const fid = req.body.untrustedData.fid.toString();
+  const a = 0;
   const buttonIndex = req.body.untrustedData.buttonIndex.toString();
   const presentRecommendation = await prisma.recommendation.findFirst({
     where: { status: "present" },
@@ -115,6 +116,7 @@ router.post("/", async (req, res) => {
     </html>
       `);
     }
+
     return res.status(200).send(`
   <!DOCTYPE html>
   <html>
