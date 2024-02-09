@@ -22,7 +22,6 @@ router.get("/podium-image", async (req, res) => {
       orderBy: { bidAmount: "desc" },
       take: 6,
     });
-    console.log("the queue is: (retrieving the image)", podium);
     const canvasWidth = 800; // Adjust canvas width as needed
     const canvasHeight = 600; // Adjust canvas height as needed
     const canvas = createCanvas(canvasWidth, canvasHeight);
@@ -62,7 +61,6 @@ router.get("/podium-image", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    console.log("in here");
     const fullUrl = req.protocol + "://" + req.get("host");
     res.setHeader("Content-Type", "text/html");
     res.status(200).send(`
@@ -96,9 +94,7 @@ router.post("/", async (req, res) => {
   });
   try {
     if (buttonIndex == "2") {
-      console.log("inside the number 2");
       let imageUrl = `${fullUrl}/jukebox/podium-image`;
-      console.log("the image url is: ", imageUrl);
       return res.status(200).send(`
     <!DOCTYPE html>
     <html>
