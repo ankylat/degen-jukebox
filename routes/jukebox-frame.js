@@ -124,7 +124,6 @@ router.post("/", async (req, res) => {
       <meta property="og:title" content="jukebox">
       <meta property="og:image" content="${imageUrl}">
       <meta name="fc:frame" content="vNext">
-      <meta name="fc:frame:image" content="">
       <meta name="fc:frame:post_url" content="${imageUrl}">
       <meta name="fc:frame:button:1" content="listen live"> 
       <meta name="fc:frame:button:1:action" content="link">   
