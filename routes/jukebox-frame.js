@@ -87,23 +87,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-async function fetchOGData(url) {
-  try {
-    const { data: html } = await axios.get(url);
-    const $ = cheerio.load(html);
-    const ogImage = $('meta[property="og:image"]').attr("content");
-    const ogTitle = $('meta[property="og:title"]').attr("content");
-
-    return {
-      ogImage,
-      ogTitle,
-    };
-  } catch (error) {
-    console.error("Error fetching OG data:", error);
-    return { ogImage: "", ogTitle: "" };
-  }
-}
-
 router.post("/", async (req, res) => {
   const fullUrl = req.protocol + "://" + req.get("host");
   const fid = req.body.untrustedData.fid.toString();
