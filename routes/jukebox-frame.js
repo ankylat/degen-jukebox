@@ -17,6 +17,7 @@ const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
 router.get("/podium-image", async (req, res) => {
   try {
+    // Fetch the top 5 future recommendations based on bid amount
     const podium = await prisma.recommendation.findMany({
       where: { status: "future" },
       orderBy: { bidAmount: "desc" },
@@ -97,7 +98,11 @@ router.get("/podium-image", async (req, res) => {
 
     // Composite the SVG overlay and the profile pictures onto the base image
     sharp(baseImageBuffer)
-      .composite([{ input: Buffer.from(svgOverlay), gravity: "northwest" }])
+      .composite(
+        compositeArray.concat([
+          { input: Buffer.from(svgOverlay), gravity: "northwest" },
+        ])
+      )
       .toFormat("png")
       .toBuffer()
       .then((outputBuffer) => {
