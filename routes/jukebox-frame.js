@@ -178,9 +178,9 @@ router.post("/", async (req, res) => {
     <head>
       <title>jukebox</title>
       <meta property="og:title" content="jukebox">
-      <meta property="og:image" content="https://jpfraneto.github.io/images/jukebox-instructions.png">
+      <meta property="og:image" content="https://jpfraneto.github.io/images/degennnn.png">
       <meta name="fc:frame" content="vNext">
-      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/jukebox-instructions.png">
+      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/degennnn.png">
       <meta name="fc:frame:button:1" content="listen live"> 
       <meta name="fc:frame:button:1:action" content="link">   
       <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
