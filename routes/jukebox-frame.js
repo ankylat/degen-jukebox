@@ -161,7 +161,7 @@ router.post("/", async (req, res) => {
       <meta property="og:image" content="${imageUrl}">
       <meta name="fc:frame" content="vNext">
       <meta name="fc:frame:post_url" content="${imageUrl}">
-      <meta name="fc:frame:button:1" content="listen live"> 
+      <meta name="fc:frame:button:1" content="jukebox"> 
       <meta name="fc:frame:button:1:action" content="link">   
       <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
       <meta name="fc:frame:button:2" content="queue">   
@@ -180,7 +180,7 @@ router.post("/", async (req, res) => {
       <meta property="og:image" content="https://jpfraneto.github.io/images/degennnn.png">
       <meta name="fc:frame" content="vNext">
       <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/degennnn.png">
-      <meta name="fc:frame:button:1" content="listen live"> 
+      <meta name="fc:frame:button:1" content="jukebox"> 
       <meta name="fc:frame:button:1:action" content="link">   
       <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
       <meta name="fc:frame:button:2" content="queue">   
@@ -200,7 +200,7 @@ router.post("/", async (req, res) => {
     <meta name="fc:frame" content="vNext">
     <meta name="fc:frame:image" content="${presentRecommendation.placeholderImageUrl}">
     <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
-    <meta name="fc:frame:button:1" content="listen live"> 
+    <meta name="fc:frame:button:1" content="jukebox"> 
     <meta name="fc:frame:button:1:action" content="link">   
     <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
     <meta name="fc:frame:button:2" content="queue">   
