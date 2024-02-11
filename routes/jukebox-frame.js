@@ -20,7 +20,7 @@ router.get("/podium-image", async (req, res) => {
     const podium = await prisma.recommendation.findMany({
       where: { status: "future" },
       orderBy: { bidAmount: "desc" },
-      take: 6,
+      take: 5,
     });
     const canvasWidth = 800; // Adjust canvas width as needed
     const canvasHeight = 600; // Adjust canvas height as needed
@@ -40,9 +40,7 @@ router.get("/podium-image", async (req, res) => {
     const lineHeight = fontSize * 1.5; // Adjust line height as needed
     let yPos = 50; // Starting y-position for drawing
     podium.forEach((entry, index) => {
-      const text = `${index + 1}. ${entry.name} - ${entry.authorId} - ${
-        entry.bidAmount
-      } $degen`;
+      const text = `${entry.username} · ${entry.bidAmount} $degen`;
       ctx.fillText(text, 50, yPos);
       yPos += lineHeight; // Increment y-position for the next line
     });
@@ -69,9 +67,9 @@ router.get("/", async (req, res) => {
     <head>
       <title>degen jukebox</title>
       <meta property="og:title" content="degen jukebox">
-      <meta property="og:image" content="https://jpfraneto.github.io/images/degen-jukebox.png">
+      <meta property="og:image" content="https://jpfraneto.github.io/images/the-gen-radioo2.png">
       <meta name="fc:frame" content="vNext">
-      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/degen-jukebox.png">
+      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/the-gen-radioo2.png">
 
       <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
       <meta name="fc:frame:button:1" content="time to vibe">
@@ -95,6 +93,7 @@ router.post("/", async (req, res) => {
   });
   try {
     if (buttonIndex == "2") {
+      console.log("the button index is 2");
       let imageUrl = `${fullUrl}/jukebox/podium-image`;
       return res.status(200).send(`
     <!DOCTYPE html>
@@ -109,9 +108,25 @@ router.post("/", async (req, res) => {
       <meta name="fc:frame:button:1:action" content="link">   
       <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
       <meta name="fc:frame:button:2" content="queue">   
-      <meta name="fc:frame:button:3" content="add to queue"> 
-      <meta name="fc:frame:button:3:action" content="link">   
-      <meta name="fc:frame:button:3:target" content="${process.env.FRONTEND_ROUTE}/queue">    
+      <meta name="fc:frame:button:3" content="instructions"> 
+      </head>
+    </html>
+      `);
+    } else if (buttonIndex == "3") {
+      return res.status(200).send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>jukebox</title>
+      <meta property="og:title" content="jukebox">
+      <meta property="og:image" content="https://jpfraneto.github.io/images/jukebox-instructions.png">
+      <meta name="fc:frame" content="vNext">
+      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/jukebox-instructions.png">
+      <meta name="fc:frame:button:1" content="listen live"> 
+      <meta name="fc:frame:button:1:action" content="link">   
+      <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
+      <meta name="fc:frame:button:2" content="queue">   
+      <meta name="fc:frame:button:3" content="instructions"> 
       </head>
     </html>
       `);
@@ -131,9 +146,7 @@ router.post("/", async (req, res) => {
     <meta name="fc:frame:button:1:action" content="link">   
     <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
     <meta name="fc:frame:button:2" content="queue">   
-    <meta name="fc:frame:button:3" content="add to queue"> 
-    <meta name="fc:frame:button:3:action" content="link">   
-    <meta name="fc:frame:button:3:target" content="${process.env.FRONTEND_ROUTE}/queue">    
+    <meta name="fc:frame:button:3" content="instructions"> 
     </head>
   </html>
     `);

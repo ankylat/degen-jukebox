@@ -31,20 +31,17 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
-app.use((req, res, next) => {
+const apiKeyMiddleware = (req, res, next) => {
   const apiKey = req.headers["x-api-key"];
-
-  // Validate the provided API key against environment variables
   const isValidKey = Object.values(process.env).includes(apiKey);
-
   if (!isValidKey) {
     return res.status(403).send("Access denied: Invalid API Key");
   }
   next();
-});
+};
 
 app.use("/jukebox", jukeboxRoute);
-app.use("/api", apiRoute);
+app.use("/api", apiKeyMiddleware, apiRoute);
 theSource.checkSystem();
 
 app.get("/", (req, res) => {

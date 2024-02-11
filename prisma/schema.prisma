@@ -20,6 +20,7 @@ model Recommendation {
   author                 User             @relation(fields: [authorId], references: [fid])
   authorId               String
   authorPfp              String?
+  authorUsername         String?
   name                   String
   castHash               String?
   recommendationDate     DateTime         @default(now())

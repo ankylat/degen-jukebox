@@ -84,11 +84,12 @@ const getYoutubeData = async (url) => {
 router.post("/recommendation", async (req, res) => {
   const { authorFid, url, bidAmount, castHash } = req.body;
   const { name, duration, youtubeID, thumbnail } = await getYoutubeData(url);
-  let userPfp;
+  let userPfp, username;
   try {
     try {
       const neynarResponse = await getUserInformationFromFid(authorFid);
       userPfp = neynarResponse.pfp.url;
+      username = neynarResponse.username;
     } catch (error) {
       userPfp =
         "https://res.cloudinary.com/merkle-manufactory/image/fetch/c_fill,f_jpg,w_168/https%3A%2F%2Fi.imgur.com%2FPPYWuJU.jpg";
@@ -104,6 +105,7 @@ router.post("/recommendation", async (req, res) => {
       data: {
         author: { connect: { fid: authorFid.toString() } },
         authorPfp: userPfp,
+        authorUsername: username,
         castHash,
         name,
         url,
