@@ -17,46 +17,103 @@ const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
 router.get("/podium-image", async (req, res) => {
   try {
-    console.log("inside the podium");
+    // Fetch the top 5 future recommendations sorted by bidAmount descending
     const podium = await prisma.recommendation.findMany({
       where: { status: "future" },
       orderBy: { bidAmount: "desc" },
       take: 5,
     });
-    console.log("the podium is: ", podium);
-    const canvasWidth = 800; // Adjust canvas width as needed
-    const canvasHeight = 600; // Adjust canvas height as needed
-    const canvas = createCanvas(canvasWidth, canvasHeight);
-    const ctx = canvas.getContext("2d");
 
-    // Set canvas background color
-    ctx.fillStyle = "#000"; // Replace with your desired background color
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    // Define the base image dimensions
+    const imageWidth = 800; // Adjust as needed
+    const imageHeight = podium.length * 100; // Dynamic height based on the number of entries
+    const pfpDiameter = 80; // Diameter of the profile picture
+    const fontSize = 24; // Adjust as needed
+    const textOffsetY = pfpDiameter / 2 + fontSize / 2; // Center text with the profile picture
+    const textOffsetX = pfpDiameter + 20; // Space after the profile picture
 
-    // Set font properties
-    const fontSize = 24; // Adjust font size as needed
-    ctx.font = `${fontSize}px Arial`; // Use the loaded font
-    ctx.fillStyle = "#FFF"; // Set font color
+    // Create a composite array for sharp
+    let compositeArray = [];
 
-    // Draw the podium data as a list
-    const lineHeight = fontSize * 1.5; // Adjust line height as needed
-    let yPos = 50; // Starting y-position for drawing
-    podium.forEach((entry, index) => {
-      const text = `@${entry.authorUsername} · ${entry.bidAmount} $degen`;
-      ctx.fillText(text, 50, yPos);
-      yPos += lineHeight; // Increment y-position for the next line
+    // Define a function to process profile images and text
+    async function processEntries() {
+      // Process each podium entry to create an image layer
+      for (const [index, entry] of podium.entries()) {
+        const yPos = index * 100 + textOffsetY; // Adjust Y position based on entry index
+        let pfpBuffer;
+
+        try {
+          // Fetch the profile picture
+          const response = await axios.get(entry.authorPfp, {
+            responseType: "arraybuffer",
+          });
+          pfpBuffer = Buffer.from(response.data);
+        } catch (error) {
+          // Handle error (e.g., set a default profile picture or skip the entry)
+          console.error("Error fetching profile picture:", error);
+          continue; // Skip this entry
+        }
+
+        // Resize and mask the profile picture to be circular
+        const pfpImage = await sharp(pfpBuffer)
+          .resize(pfpDiameter, pfpDiameter)
+          .png()
+          .toBuffer();
+
+        // Add the profile picture to the composite array
+        compositeArray.push({
+          input: pfpImage,
+          top: index * 100,
+          left: 0,
+        });
+
+        // Prepare SVG text element for this entry
+        const svgText = `
+          <text x="${textOffsetX}" y="${yPos}" font-family="Arial" font-size="${fontSize}" fill="white">
+            @${entry.authorUsername} · ${entry.bidAmount} $degen
+          </text>
+        `;
+
+        // Add the text as an SVG layer
+        compositeArray.push({
+          input: Buffer.from(
+            `<svg width="${imageWidth}" height="${imageHeight}" xmlns="http://www.w3.org/2000/svg">${svgText}</svg>`
+          ),
+          top: 0,
+          left: 0,
+        });
+      }
+    }
+
+    // Process the entries
+    await processEntries();
+
+    // Create the base image
+    let baseImage = sharp({
+      create: {
+        width: imageWidth,
+        height: imageHeight,
+        channels: 4,
+        background: { r: 0, g: 0, b: 0, alpha: 1 }, // Black background
+      },
     });
 
-    // Convert canvas to buffer
-    const buffer = canvas.toBuffer();
-    console.log("the buffer is: ", buffer);
-
-    // Send the image in the response
-    res.setHeader("Content-Type", "image/png");
-    res.setHeader("Cache-Control", "max-age=10");
-    res.send(buffer);
+    // Composite all the images and text onto the base image
+    baseImage
+      .composite(compositeArray)
+      .toFormat("png")
+      .toBuffer()
+      .then((outputBuffer) => {
+        res.setHeader("Content-Type", "image/png");
+        res.setHeader("Cache-Control", "max-age=10");
+        res.send(outputBuffer);
+      })
+      .catch((error) => {
+        console.error("Error processing image", error);
+        res.status(500).send("Error processing image");
+      });
   } catch (error) {
-    console.log("there was an error generating the image");
+    console.error("There was an error generating the image", error);
     res.status(500).send("Error generating image");
   }
 });
@@ -95,9 +152,7 @@ router.post("/", async (req, res) => {
   });
   try {
     if (buttonIndex == "2") {
-      console.log("the button index is 2", fullUrl);
       let imageUrl = `${fullUrl}/jukebox/podium-image`;
-      console.log("the image url is: ", imageUrl);
       return res.status(200).send(`
     <!DOCTYPE html>
     <html>
