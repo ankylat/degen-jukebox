@@ -34,6 +34,7 @@ model Recommendation {
   duration               Int
   placeholderImageUrl    String?    
   repeated               Boolean @default(false)
+  presentedCast          String?
 }
 
 model Cycle {
