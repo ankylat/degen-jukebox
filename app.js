@@ -32,9 +32,7 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 app.use((req, res, next) => {
-  console.log("in here");
   const apiKey = req.headers["x-api-key"];
-  console.log("api ", apiKey);
 
   // Validate the provided API key against environment variables
   const isValidKey = Object.values(process.env).includes(apiKey);
