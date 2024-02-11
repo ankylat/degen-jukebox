@@ -17,11 +17,13 @@ const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
 router.get("/podium-image", async (req, res) => {
   try {
+    console.log("inside the podium");
     const podium = await prisma.recommendation.findMany({
       where: { status: "future" },
       orderBy: { bidAmount: "desc" },
       take: 5,
     });
+    console.log("the podium is: ", podium);
     const canvasWidth = 800; // Adjust canvas width as needed
     const canvasHeight = 600; // Adjust canvas height as needed
     const canvas = createCanvas(canvasWidth, canvasHeight);
@@ -40,13 +42,14 @@ router.get("/podium-image", async (req, res) => {
     const lineHeight = fontSize * 1.5; // Adjust line height as needed
     let yPos = 50; // Starting y-position for drawing
     podium.forEach((entry, index) => {
-      const text = `${entry.username} · ${entry.bidAmount} $degen`;
+      const text = `@${entry.username} · ${entry.bidAmount} $degen`;
       ctx.fillText(text, 50, yPos);
       yPos += lineHeight; // Increment y-position for the next line
     });
 
     // Convert canvas to buffer
     const buffer = canvas.toBuffer();
+    console.log("the buffer is: ", buffer);
 
     // Send the image in the response
     res.setHeader("Content-Type", "image/png");
@@ -85,16 +88,15 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const fullUrl = req.protocol + "://" + req.get("host");
-  const fid = req.body.untrustedData.fid.toString();
-  const a = 0;
   const buttonIndex = req.body.untrustedData.buttonIndex.toString();
   const presentRecommendation = await prisma.recommendation.findFirst({
     where: { status: "present" },
   });
   try {
     if (buttonIndex == "2") {
-      console.log("the button index is 2");
+      console.log("the button index is 2", fullUrl);
       let imageUrl = `${fullUrl}/jukebox/podium-image`;
+      console.log("the image url is: ", imageUrl);
       return res.status(200).send(`
     <!DOCTYPE html>
     <html>
@@ -113,6 +115,7 @@ router.post("/", async (req, res) => {
     </html>
       `);
     } else if (buttonIndex == "3") {
+      console.log("button index is 3");
       return res.status(200).send(`
     <!DOCTYPE html>
     <html>
@@ -131,7 +134,7 @@ router.post("/", async (req, res) => {
     </html>
       `);
     }
-
+    console.log("at the end here");
     return res.status(200).send(`
   <!DOCTYPE html>
   <html>
