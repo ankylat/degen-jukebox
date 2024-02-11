@@ -3,10 +3,9 @@ const router = express.Router();
 const axios = require("axios");
 const prisma = require("../lib/prismaClient");
 const moment = require("moment");
-const { soundAPI } = require("../lib/soundxyz");
 const ethers = require("ethers");
-const SOUNDXYZ_ABI = require("../abis/SOUND_XYZ.json");
 const theSource = require("../lib/theSource");
+const { getUserInformationFromFid } = require("../lib/neynar");
 
 const contractAddress = "0x000000000001A36777f9930aAEFf623771b13e70";
 
@@ -16,39 +15,8 @@ const privateKey = process.env.PRIVATE_KEY;
 const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_RPC_URL);
 const wallet = new ethers.Wallet(privateKey, provider);
 
-const soundxyzContract = new ethers.Contract(
-  contractAddress,
-  SOUNDXYZ_ABI,
-  wallet
-);
-
-const music = [
-  {
-    title: "Lateralus",
-    artist: "Tool",
-    year: "2001",
-    cover:
-      "https://i.discogs.com/6TL2Yqaqf1XRy11HUVdtnZ_hVhxtoGo9tzpuaBBk9SM/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTczMjU0/MjYtMTY2MzQzOTQ4/NC02MjE5LmpwZWc.jpeg",
-  },
-  {
-    title: "Ommadawn",
-    artist: "Mike Oldfield",
-    year: "1975",
-    cover:
-      "https://i.discogs.com/7EZGVh9d3iPr6tT-oHbTe3PH4Psyk7RUAUtoc-UB7qY/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTQ1NTc5/OC0xNDk3OTc0MjA1/LTMzMTguanBlZw.jpeg",
-  },
-  {
-    title: "Medicine Work",
-    artist: "Byron Metcalf & Rob Thomas",
-    year: "2013",
-    cover:
-      "https://i.discogs.com/YkPsf69kKFk91jyB7f6QslIJGhhG41Rr3uhgfr0uL08/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTQ2NzEz/NzYtMTM3MTc0NTgz/OC03NDcyLmpwZWc.jpeg",
-  },
-];
-
 router.get("/present-recommendation", async (req, res) => {
   try {
-    console.log("on the present recommendaiton route");
     const presentRecommendation = await prisma.recommendation.findFirst({
       where: { status: "present" },
     });
@@ -82,19 +50,6 @@ router.get("/present-recommendation", async (req, res) => {
   }
 });
 
-router.get("/music", async (req, res) => {
-  try {
-    console.log(
-      "here i should fetch all the music available on the wallet that is connected"
-    );
-
-    return res.status(200).json({ success: true, jukeboxMusic: music });
-  } catch (error) {
-    console.log("there was an error fetching the jukebox", error);
-    res.status(401).json({ message: "there was an error" });
-  }
-});
-
 function youtube_parser(url) {
   var regExp =
     /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -103,22 +58,12 @@ function youtube_parser(url) {
 }
 
 const getYoutubeData = async (url) => {
-  console.log("fetching the youtube data for this url", url);
   const youtubeID = youtube_parser(url);
-  console.log("the youtube id is: ", youtubeID);
   const apiKey = process.env.YOUTUBE_API_KEY;
   const youtubeApiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${youtubeID}&key=${apiKey}&fields=items(id,snippet(title,thumbnails),contentDetails(duration))&part=snippet,contentDetails`;
 
   try {
     const response = await axios.get(youtubeApiUrl);
-    console.log(
-      "the response from the call is: ",
-      response.data.items[0].contentDetails
-    );
-    console.log(
-      "the response from the call is: ",
-      response.data.items[0].snippet
-    );
     if (response.data.items.length > 0) {
       const item = response.data.items[0];
       const durationISO = item.contentDetails.duration;
@@ -137,12 +82,18 @@ const getYoutubeData = async (url) => {
 };
 
 router.post("/recommendation", async (req, res) => {
-  console.log("inside the recommendations api", req.body);
-  const { authorFid, url, bidAmount } = req.body;
+  const { authorFid, url, bidAmount, castHash } = req.body;
   const { name, duration, youtubeID, thumbnail } = await getYoutubeData(url);
-  console.log("THE THUMBNAIL IS: ", thumbnail);
-  console.log("in here, the name and duration are: ", name, duration);
+  let userPfp;
   try {
+    try {
+      const neynarResponse = await getUserInformationFromFid(authorFid);
+      userPfp = neynarResponse.pfp.url;
+    } catch (error) {
+      userPfp =
+        "https://res.cloudinary.com/merkle-manufactory/image/fetch/c_fill,f_jpg,w_168/https%3A%2F%2Fi.imgur.com%2FPPYWuJU.jpg";
+    }
+
     let user = await prisma.user.upsert({
       where: { fid: authorFid.toString() },
       update: {},
@@ -152,6 +103,8 @@ router.post("/recommendation", async (req, res) => {
     const recommendation = await prisma.recommendation.create({
       data: {
         author: { connect: { fid: authorFid.toString() } },
+        authorPfp: userPfp,
+        castHash,
         name,
         url,
         status: "future",
@@ -161,34 +114,16 @@ router.post("/recommendation", async (req, res) => {
         bidAmount: parseInt(bidAmount, 10),
       },
     });
-    const queue = await prisma.recommendation.findMany({
-      where: { status: "future" },
-      orderBy: { bidAmount: "desc" },
-    });
     res.status(201).json({
-      message: "Recommendation added successfully!",
-      recommendation,
-      queue,
+      message: "Recommendation added successfully",
+      success: true,
     });
   } catch (error) {
-    console.log("there was an error in here", error);
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// Endpoint to add a bid to the queue
-router.get("/queue", async (req, res) => {
-  try {
-    // Check if the recommendation already has a queue item
-    let queue = await prisma.recommendation.findMany({
-      where: { status: "future" },
-      orderBy: { bidAmount: "desc" },
-      include: { author: true },
-    });
-
-    res.status(201).json({ queue });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.log(
+      "there was an error adding the recommendation to the database",
+      error
+    );
+    res.status(400).json({ success: false, error: error.message });
   }
 });
 
@@ -199,8 +134,9 @@ router.get("/future", async (req, res) => {
       where: { status: "future" },
       orderBy: { bidAmount: "desc" },
       include: { author: true },
+      take: 5,
     });
-    res.json(queueItems);
+    res.json({ queue: queueItems });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

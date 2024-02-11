@@ -23,7 +23,6 @@ const limiter = rateLimit({
 // Routes
 const jukeboxRoute = require("./routes/jukebox-frame");
 const apiRoute = require("./routes/api");
-const farcasterRoute = require("./routes/farcaster");
 
 const app = express();
 app.use(cors());
@@ -33,17 +32,25 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 app.use((req, res, next) => {
+  console.log("in here");
+  const apiKey = req.headers["x-api-key"];
+  console.log("api ", apiKey);
+
+  // Validate the provided API key against environment variables
+  const isValidKey = Object.values(process.env).includes(apiKey);
+
+  if (!isValidKey) {
+    return res.status(403).send("Access denied: Invalid API Key");
+  }
   next();
 });
 
 app.use("/jukebox", jukeboxRoute);
 app.use("/api", apiRoute);
-app.use("/farcaster", farcasterRoute);
-console.log("right before calling the check system function");
 theSource.checkSystem();
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the degen jukebox!");
+  res.send("hello world.\n\nall rights reserved: the gen radio");
 });
 
 app.listen(PORT, () => {

@@ -19,7 +19,9 @@ model Recommendation {
   id                     String           @id @default(uuid())
   author                 User             @relation(fields: [authorId], references: [fid])
   authorId               String
+  authorPfp              String?
   name                   String
+  castHash               String?
   recommendationDate     DateTime         @default(now())
   url                    String
   youtubeID              String?
@@ -29,19 +31,14 @@ model Recommendation {
   timestampDifference    Int?
   bidAmount              Int              @default(0)
   duration               Int
-  playsCount             Int              @default(0) // Count of how many times it has been played
-  queueItems             QueueItem[]      // Relations to queue items
-  placeholderImageUrl    String?     // Relations to queue items
-
+  placeholderImageUrl    String?    
 }
 
-model QueueItem {
-  id                     String           @id @default(uuid())
-  recommendation         Recommendation   @relation(fields: [recommendationId], references: [id])
-  recommendationId       String
-  bidAmount              Int              // Amount of 'currency' bid to prioritize this item in the queue
-  submittedAt            DateTime         @default(now())
-  playedAt               DateTime?        // When this item was played
-  status                 String           @default("queued")
+model Cycle {
+  id                     Int               @id @default(autoincrement())
+  cycleIndex             Int
+  startingTimestamp      DateTime          @default(now())
+  cycleDuration          Int?              // Duration in milliseconds
+  numberOfRecommendations Int              @default(0)
 }
 
