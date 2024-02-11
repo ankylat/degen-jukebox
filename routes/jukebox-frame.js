@@ -56,7 +56,8 @@ router.get("/podium-image", async (req, res) => {
     res.setHeader("Cache-Control", "max-age=10");
     res.send(buffer);
   } catch (error) {
-    console.log("there was an error creating the image", error);
+    console.log("there was an error generating the image");
+    res.status(500).send("Error generating image");
   }
 });
 
