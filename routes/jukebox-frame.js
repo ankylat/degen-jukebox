@@ -42,7 +42,7 @@ router.get("/podium-image", async (req, res) => {
     const lineHeight = fontSize * 1.5; // Adjust line height as needed
     let yPos = 50; // Starting y-position for drawing
     podium.forEach((entry, index) => {
-      const text = `@${entry.username} · ${entry.bidAmount} $degen`;
+      const text = `@${entry.authorUsername} · ${entry.bidAmount} $degen`;
       ctx.fillText(text, 50, yPos);
       yPos += lineHeight; // Increment y-position for the next line
     });

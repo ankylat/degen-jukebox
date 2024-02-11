@@ -89,10 +89,12 @@ router.post("/recommendation", async (req, res) => {
     try {
       const neynarResponse = await getUserInformationFromFid(authorFid);
       userPfp = neynarResponse.pfp.url;
+      console.log("the neynar response is: ", neynarResponse);
       username = neynarResponse.username;
     } catch (error) {
       userPfp =
         "https://res.cloudinary.com/merkle-manufactory/image/fetch/c_fill,f_jpg,w_168/https%3A%2F%2Fi.imgur.com%2FPPYWuJU.jpg";
+      username = "";
     }
 
     let user = await prisma.user.upsert({
