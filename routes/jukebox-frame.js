@@ -17,100 +17,94 @@ const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
 router.get("/podium-image", async (req, res) => {
   try {
-    // Fetch the top 5 future recommendations sorted by bidAmount descending
     const podium = await prisma.recommendation.findMany({
       where: { status: "future" },
       orderBy: { bidAmount: "desc" },
       take: 5,
     });
 
-    // Define the base image dimensions
+    let svgParts = [];
+    let compositeArray = [];
     const imageWidth = 800; // Adjust as needed
     const imageHeight = podium.length * 100; // Dynamic height based on the number of entries
-    const pfpDiameter = 80; // Diameter of the profile picture
-    const fontSize = 24; // Adjust as needed
-    const textOffsetY = pfpDiameter / 2 + fontSize / 2; // Center text with the profile picture
-    const textOffsetX = pfpDiameter + 20; // Space after the profile picture
+    const pfpDiameter = 80; // Diameter of the profile pictures
 
-    // Create a composite array for sharp
-    let compositeArray = [];
+    for (const [index, entry] of podium.entries()) {
+      const yPos = index * 100 + pfpDiameter / 2; // Center profile picture vertically
+      const xPos = 10; // Margin from the left for the profile picture
 
-    // Define a function to process profile images and text
-    async function processEntries() {
-      // Process each podium entry to create an image layer
-      for (const [index, entry] of podium.entries()) {
-        const yPos = index * 100 + textOffsetY; // Adjust Y position based on entry index
-        let pfpBuffer;
+      // Fetch the profile picture
+      try {
+        const response = await axios.get(entry.authorPfp, {
+          responseType: "arraybuffer",
+        });
+        const pfpBuffer = Buffer.from(response.data);
 
-        try {
-          // Fetch the profile picture
-          const response = await axios.get(entry.authorPfp, {
-            responseType: "arraybuffer",
-          });
-          pfpBuffer = Buffer.from(response.data);
-        } catch (error) {
-          // Handle error (e.g., set a default profile picture or skip the entry)
-          console.error("Error fetching profile picture:", error);
-          continue; // Skip this entry
-        }
-
-        // Resize and mask the profile picture to be circular
+        // Resize the profile picture to be circular
         const pfpImage = await sharp(pfpBuffer)
           .resize(pfpDiameter, pfpDiameter)
+          .ensureAlpha()
+          .composite([
+            {
+              input: Buffer.from(
+                `<svg><circle cx="${pfpDiameter / 2}" cy="${
+                  pfpDiameter / 2
+                }" r="${pfpDiameter / 2}" fill="#FFF"/></svg>`
+              ),
+              blend: "dest-in",
+            },
+          ])
           .png()
           .toBuffer();
 
-        // Add the profile picture to the composite array
         compositeArray.push({
           input: pfpImage,
           top: index * 100,
-          left: 0,
+          left: xPos,
         });
 
-        // Prepare SVG text element for this entry
-        const svgText = `
-          <text x="${textOffsetX}" y="${yPos}" font-family="Arial" font-size="${fontSize}" fill="white">
-            @${entry.authorUsername} · ${entry.bidAmount} $degen
-          </text>
-        `;
-
-        // Add the text as an SVG layer
-        compositeArray.push({
-          input: Buffer.from(
-            `<svg width="${imageWidth}" height="${imageHeight}" xmlns="http://www.w3.org/2000/svg">${svgText}</svg>`
-          ),
-          top: 0,
-          left: 0,
-        });
+        // Create SVG text element
+        svgParts.push(`
+          <text x="${
+            xPos + pfpDiameter + 10
+          }" y="${yPos}" font-family="Arial" font-size="24" fill="white" dominant-baseline="middle">@${
+          entry.authorUsername
+        } · ${entry.bidAmount} $degen</text>
+        `);
+      } catch (error) {
+        console.error("Error fetching profile picture:", error);
+        // Handle error or continue without profile picture
       }
     }
 
-    // Process the entries
-    await processEntries();
+    // Combine all SVG parts into one SVG element
+    const svgOverlay = `
+    <svg width="${imageWidth}" height="${imageHeight}" xmlns="http://www.w3.org/2000/svg">
+      ${svgParts.join("")}
+    </svg>`;
 
-    // Create the base image
-    let baseImage = sharp({
+    // Create a base image with a black background
+    const baseImageBuffer = await sharp({
       create: {
         width: imageWidth,
         height: imageHeight,
         channels: 4,
-        background: { r: 0, g: 0, b: 0, alpha: 1 }, // Black background
+        background: { r: 0, g: 0, b: 0, alpha: 1 },
       },
-    });
+    })
+      .png()
+      .toBuffer();
 
-    // Composite all the images and text onto the base image
-    baseImage
-      .composite(compositeArray)
+    // Composite the SVG overlay and the profile pictures onto the base image
+    sharp(baseImageBuffer)
+      .composite([{ input: Buffer.from(svgOverlay), gravity: "northwest" }])
       .toFormat("png")
       .toBuffer()
       .then((outputBuffer) => {
+        // Set the content type to PNG and send the response
         res.setHeader("Content-Type", "image/png");
         res.setHeader("Cache-Control", "max-age=10");
         res.send(outputBuffer);
-      })
-      .catch((error) => {
-        console.error("Error processing image", error);
-        res.status(500).send("Error processing image");
       });
   } catch (error) {
     console.error("There was an error generating the image", error);
