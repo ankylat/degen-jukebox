@@ -17,7 +17,6 @@ const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
 router.get("/podium-image", async (req, res) => {
   try {
-    console.log("inside the podium image route");
     // Fetch the top 5 future recommendations based on bid amount
     const podium = await prisma.recommendation.findMany({
       where: { status: "future" },
@@ -29,12 +28,10 @@ router.get("/podium-image", async (req, res) => {
       where: { status: "future" },
     });
 
-    let returnString = `there are ${queue} items on the queue`;
     const response = await axios({
       url: "https://jpfraneto.github.io/images/the-gen-queue3.png",
       responseType: "arraybuffer",
     });
-    console.log("after the response");
     const imageBuffer = Buffer.from(response.data, "utf-8");
     const metadata = await sharp(imageBuffer).metadata();
     const imageWidth = metadata.width;
@@ -145,7 +142,6 @@ router.post("/", async (req, res) => {
   try {
     if (buttonIndex == "2") {
       let imageUrl = `https://api.thegenradio.com/jukebox/podium-image`;
-      console.log("now the image should be loaded, button 2", imageUrl);
       return res.status(200).send(`
       <!DOCTYPE html>
       <html>
@@ -164,7 +160,6 @@ router.post("/", async (req, res) => {
       </html>
         `);
     } else if (buttonIndex == "3") {
-      console.log("button index is 3");
       return res.status(200).send(`
     <!DOCTYPE html>
     <html>
@@ -183,7 +178,6 @@ router.post("/", async (req, res) => {
     </html>
       `);
     }
-    console.log("at the end here");
     return res.status(200).send(`
   <!DOCTYPE html>
   <html>
