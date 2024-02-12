@@ -38,51 +38,51 @@ router.get("/podium-image", async (req, res) => {
     const imageHeight = metadata.height;
     const offsetX = imageWidth / 2; // Adjust if necessary
     const offsetY = imageHeight / 4; // Adjust if necessary
+    const returnString = `${queue} elements on the queue`;
+    console.log("the return string is: ", returnString);
     // Create an overlay SVG
     const svgOverlay = `
 <svg width="${imageWidth}" height="${imageHeight}" xmlns="http://www.w3.org/2000/svg">
   <style>
-    .percentage { font: bold 90px 'Comic Sans MS', cursive; fill: white; transform: translateY(-120px); }
-    .bottomText { font: bold 60px 'Comic Sans MS', cursive; fill: white; }
+    .percentage { font: bold 70px 'Comic Sans MS', cursive; fill: white; transform: translateY(-120px); }
   </style>
+  <text x="50%" y="${offsetY}" class="title" dominant-baseline="middle" text-anchor="middle">${returnString}</text>
   <text x="${offsetX}" y="${
-      offsetY + 60
+      offsetY + 80
     }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
       podium[0].authorUsername
     } · ${
-      podium[0].bidAmount > 0 ? podium[0].bidAmount + "$degen" : "repeated"
+      podium[0].bidAmount > 0 ? podium[0].bidAmount + " $degen" : "repeated"
     }</text>
   <text x="${offsetX}" y="${
-      offsetY + 160
+      offsetY + 180
     }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
       podium[1].authorUsername
     } · ${
-      podium[1].bidAmount > 0 ? podium[1].bidAmount + "$degen" : "repeated"
+      podium[1].bidAmount > 0 ? podium[1].bidAmount + " $degen" : "repeated"
     }</text>
   <text x="${offsetX}" y="${
-      offsetY + 260
+      offsetY + 280
     }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
       podium[2].authorUsername
     } · ${
-      podium[2].bidAmount > 0 ? podium[2].bidAmount + "$degen" : "repeated"
+      podium[2].bidAmount > 0 ? podium[2].bidAmount + " $degen" : "repeated"
     }</text>
   <text x="${offsetX}" y="${
-      offsetY + 360
+      offsetY + 380
     }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
       podium[3].authorUsername
     } · ${
-      podium[3].bidAmount > 0 ? podium[3].bidAmount + "$degen" : "repeated"
+      podium[3].bidAmount > 0 ? podium[3].bidAmount + " $degen" : "repeated"
     }</text>
   <text x="${offsetX}" y="${
-      offsetY + 460
+      offsetY + 480
     }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
       podium[4].authorUsername
     } · ${
-      podium[4].bidAmount > 0 ? podium[4].bidAmount + "$degen" : "repeated"
+      podium[4].bidAmount > 0 ? podium[4].bidAmount + " $degen" : "repeated"
     }</text>
-  <text x="50%" y="${
-    imageHeight - 30
-  }" class="bottomText" dominant-baseline="middle" text-anchor="middle">${returnString}</text>
+
 </svg>`;
     console.log("right before the sharp", svgOverlay);
 
