@@ -45,46 +45,46 @@ router.get("/podium-image", async (req, res) => {
     const svgOverlay = `
     <svg width="${imageWidth}" height="${imageHeight}" xmlns="http://www.w3.org/2000/svg">
       <style>
-        .percentage { font: bold 120px sans-serif; fill: white; transform: translateY(-120px) }
+        .percentage { font: bold 90px sans-serif; fill: white; transform: translateY(-120px) }
         .bottomText { font: bold 60px sans-serif; fill: white; }
       </style>
       <text x="${offsetX}" y="${
-      offsetY + 100
+      offsetY + 80
     }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
       podium[0].authorUsername
     } · ${
       podium[0].bidAmount > 0 ? podium[0].bidAmount + "$degen" : "repeated"
     }</text>
     <text x="${offsetX}" y="${
-      offsetY + 220
+      offsetY + 200
     }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
       podium[1].authorUsername
     } · ${
       podium[1].bidAmount > 0 ? podium[1].bidAmount + "$degen" : "repeated"
     }</text>
     <text x="${offsetX}" y="${
-      offsetY + 340
+      offsetY + 320
     }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
       podium[2].authorUsername
     } · ${
       podium[2].bidAmount > 0 ? podium[2].bidAmount + "$degen" : "repeated"
     }</text>
     <text x="${offsetX}" y="${
-      offsetY + 460
+      offsetY + 440
     }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
       podium[3].authorUsername
     } · ${
       podium[3].bidAmount > 0 ? podium[3].bidAmount + "$degen" : "repeated"
     }</text>
     <text x="${offsetX}" y="${
-      offsetY + 580
+      offsetY + 560
     }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
       podium[4].authorUsername
     } · ${
       podium[4].bidAmount > 0 ? podium[4].bidAmount + "$degen" : "repeated"
     }</text>
     <text x="50%" y="${
-      imageHeight - 10
+      imageHeight - 30
     }" class="bottomText" dominant-baseline="middle" text-anchor="middle">${returnString}</text>
     </svg>`;
     console.log("right before the sharp", svgOverlay);
