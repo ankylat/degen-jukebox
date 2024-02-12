@@ -147,22 +147,22 @@ router.post("/", async (req, res) => {
       let imageUrl = `https://api.thegenradio.com/jukebox/podium-image`;
       console.log("now the image should be loaded, button 2", imageUrl);
       return res.status(200).send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>queue</title>
-      <meta property="og:title" content="queue">
-      <meta property="og:image" content="${imageUrl}">
-      <meta name="fc:frame" content="vNext">
-      <meta name="fc:frame:post_url" content="${imageUrl}">
-      <meta name="fc:frame:button:1" content="jukebox"> 
-      <meta name="fc:frame:button:1:action" content="link">   
-      <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
-      <meta name="fc:frame:button:2" content="queue">   
-      <meta name="fc:frame:button:3" content="instructions"> 
-      </head>
-    </html>
-      `);
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>jukebox</title>
+        <meta property="og:title" content="jukebox">
+        <meta property="og:image" content="${imageUrl}">
+        <meta name="fc:frame" content="vNext">
+        <meta name="fc:frame:image" content="${imageUrl}">
+        <meta name="fc:frame:button:1" content="jukebox"> 
+        <meta name="fc:frame:button:1:action" content="link">   
+        <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
+        <meta name="fc:frame:button:2" content="queue">   
+        <meta name="fc:frame:button:3" content="instructions"> 
+        </head>
+      </html>
+        `);
     } else if (buttonIndex == "3") {
       console.log("button index is 3");
       return res.status(200).send(`
