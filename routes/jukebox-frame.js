@@ -24,92 +24,84 @@ router.get("/podium-image", async (req, res) => {
       take: 5,
     });
 
-    let svgParts = [];
-    let compositeArray = [];
-    const imageWidth = 800; // Adjust as needed
-    const imageHeight = podium.length * 100; // Dynamic height based on the number of entries
-    const pfpDiameter = 80; // Diameter of the profile pictures
+    const queue = await prisma.recommendation.count({
+      where: { status: "future" },
+    });
 
-    for (const [index, entry] of podium.entries()) {
-      const yPos = index * 100 + pfpDiameter / 2; // Center profile picture vertically
-      const xPos = 10; // Margin from the left for the profile picture
-
-      // Fetch the profile picture
-      try {
-        const response = await axios.get(entry.authorPfp, {
-          responseType: "arraybuffer",
-        });
-        const pfpBuffer = Buffer.from(response.data);
-
-        // Resize the profile picture to be circular
-        const pfpImage = await sharp(pfpBuffer)
-          .resize(pfpDiameter, pfpDiameter)
-          .ensureAlpha()
-          .composite([
-            {
-              input: Buffer.from(
-                `<svg><circle cx="${pfpDiameter / 2}" cy="${
-                  pfpDiameter / 2
-                }" r="${pfpDiameter / 2}" fill="#FFF"/></svg>`
-              ),
-              blend: "dest-in",
-            },
-          ])
-          .png()
-          .toBuffer();
-
-        compositeArray.push({
-          input: pfpImage,
-          top: index * 100,
-          left: xPos,
-        });
-
-        // Create SVG text element
-        svgParts.push(`
-          <text x="${
-            xPos + pfpDiameter + 10
-          }" y="${yPos}" font-family="Arial" font-size="24" fill="white" dominant-baseline="middle">@${
-          entry.authorUsername
-        } · ${entry.bidAmount} $degen</text>
-        `);
-      } catch (error) {
-        console.error("Error fetching profile picture:", error);
-        // Handle error or continue without profile picture
-      }
-    }
-
-    // Combine all SVG parts into one SVG element
+    let returnString = `there are ${queue} items on the queue`;
+    console.log("the return string is: ", returnString);
+    const response = await axios({
+      url: "https://jpfraneto.github.io/images/the-gen-queue.png",
+      responseType: "arraybuffer",
+    });
+    const imageBuffer = Buffer.from(response.data, "utf-8");
+    const metadata = await sharp(imageBuffer).metadata();
+    const imageWidth = metadata.width;
+    const imageHeight = metadata.height;
+    const offsetX = imageWidth / 2; // Adjust if necessary
+    const offsetY = imageHeight / 4; // Adjust if necessary
+    // Create an overlay SVG
     const svgOverlay = `
     <svg width="${imageWidth}" height="${imageHeight}" xmlns="http://www.w3.org/2000/svg">
-      ${svgParts.join("")}
+      <style>
+        .percentage { font: bold 120px sans-serif; fill: white; transform: translateY(-120px) }
+        .bottomText { font: bold 60px sans-serif; fill: white; }
+      </style>
+      <text x="${offsetX}" y="${
+      offsetY + 100
+    }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
+      podium[0].authorUsername
+    } · ${
+      podium[0].bidAmount > 0 ? podium[0].bidAmount + "$degen" : "repeated"
+    }</text>
+    <text x="${offsetX}" y="${
+      offsetY + 220
+    }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
+      podium[1].authorUsername
+    } · ${
+      podium[1].bidAmount > 0 ? podium[1].bidAmount + "$degen" : "repeated"
+    }</text>
+    <text x="${offsetX}" y="${
+      offsetY + 340
+    }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
+      podium[2].authorUsername
+    } · ${
+      podium[2].bidAmount > 0 ? podium[2].bidAmount + "$degen" : "repeated"
+    }</text>
+    <text x="${offsetX}" y="${
+      offsetY + 460
+    }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
+      podium[3].authorUsername
+    } · ${
+      podium[3].bidAmount > 0 ? podium[3].bidAmount + "$degen" : "repeated"
+    }</text>
+    <text x="${offsetX}" y="${
+      offsetY + 580
+    }" class="percentage" dominant-baseline="middle" text-anchor="middle">@${
+      podium[4].authorUsername
+    } · ${
+      podium[4].bidAmount > 0 ? podium[4].bidAmount + "$degen" : "repeated"
+    }</text>
+    <text x="50%" y="${
+      imageHeight - 10
+    }" class="bottomText" dominant-baseline="middle" text-anchor="middle">${returnString}</text>
     </svg>`;
+    console.log("right before the sharp", svgOverlay);
 
-    // Create a base image with a black background
-    const baseImageBuffer = await sharp({
-      create: {
-        width: imageWidth,
-        height: imageHeight,
-        channels: 4,
-        background: { r: 0, g: 0, b: 0, alpha: 1 },
-      },
-    })
-      .png()
-      .toBuffer();
-
-    // Composite the SVG overlay and the profile pictures onto the base image
-    sharp(baseImageBuffer)
-      .composite(
-        compositeArray.concat([
-          { input: Buffer.from(svgOverlay), gravity: "northwest" },
-        ])
-      )
+    sharp(imageBuffer)
+      .composite([{ input: Buffer.from(svgOverlay), gravity: "northwest" }])
       .toFormat("png")
       .toBuffer()
       .then((outputBuffer) => {
         // Set the content type to PNG and send the response
+        console.log("the output buffer is: ", outputBuffer);
         res.setHeader("Content-Type", "image/png");
         res.setHeader("Cache-Control", "max-age=10");
         res.send(outputBuffer);
+      })
+      .catch((error) => {
+        console.error("Error processing image", error);
+        res.status(500).send("Error processing image");
       });
   } catch (error) {
     console.error("There was an error generating the image", error);
