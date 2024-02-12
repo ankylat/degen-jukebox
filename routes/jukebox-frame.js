@@ -29,9 +29,8 @@ router.get("/podium-image", async (req, res) => {
     });
 
     let returnString = `there are ${queue} items on the queue`;
-    console.log("the return string is: ", returnString);
     const response = await axios({
-      url: "https://jpfraneto.github.io/images/the-gen-queue.png",
+      url: "https://jpfraneto.github.io/images/the-gen-queue2.png",
       responseType: "arraybuffer",
     });
     const imageBuffer = Buffer.from(response.data, "utf-8");
