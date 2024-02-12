@@ -17,6 +17,7 @@ const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
 router.get("/podium-image", async (req, res) => {
   try {
+    console.log("inside the podium image route");
     // Fetch the top 5 future recommendations based on bid amount
     const podium = await prisma.recommendation.findMany({
       where: { status: "future" },
@@ -33,6 +34,7 @@ router.get("/podium-image", async (req, res) => {
       url: "https://jpfraneto.github.io/images/the-gen-queue2.png",
       responseType: "arraybuffer",
     });
+    console.log("after the response");
     const imageBuffer = Buffer.from(response.data, "utf-8");
     const metadata = await sharp(imageBuffer).metadata();
     const imageWidth = metadata.width;
@@ -142,14 +144,14 @@ router.post("/", async (req, res) => {
   });
   try {
     if (buttonIndex == "2") {
-      let imageUrl = `${fullUrl}/jukebox/podium-image`;
-      console.log("now the image should be loaded, button 2");
+      let imageUrl = `https://api.thegenradio.com/jukebox/podium-image`;
+      console.log("now the image should be loaded, button 2", imageUrl);
       return res.status(200).send(`
     <!DOCTYPE html>
     <html>
     <head>
-      <title>jukebox</title>
-      <meta property="og:title" content="jukebox">
+      <title>queue</title>
+      <meta property="og:title" content="queue">
       <meta property="og:image" content="${imageUrl}">
       <meta name="fc:frame" content="vNext">
       <meta name="fc:frame:post_url" content="${imageUrl}">
