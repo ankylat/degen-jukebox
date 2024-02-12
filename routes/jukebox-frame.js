@@ -143,6 +143,7 @@ router.post("/", async (req, res) => {
   try {
     if (buttonIndex == "2") {
       let imageUrl = `${fullUrl}/jukebox/podium-image`;
+      console.log("now the image should be loaded, button 2");
       return res.status(200).send(`
     <!DOCTYPE html>
     <html>
