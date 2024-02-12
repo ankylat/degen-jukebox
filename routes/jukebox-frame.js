@@ -32,6 +32,7 @@ router.get("/podium-image", async (req, res) => {
       url: "https://jpfraneto.github.io/images/the-gen-queue3.png",
       responseType: "arraybuffer",
     });
+    const a = "";
     const imageBuffer = Buffer.from(response.data, "utf-8");
     const metadata = await sharp(imageBuffer).metadata();
     const imageWidth = metadata.width;
