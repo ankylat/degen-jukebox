@@ -118,6 +118,9 @@ router.post("/recommendation", async (req, res) => {
         bidAmount: parseInt(bidAmount, 10),
       },
     });
+    console.log(
+      `the recommendation ${recommendation.name} was added successfully by ${authorFid} to the future`
+    );
     res.status(201).json({
       message: "Recommendation added successfully",
       success: true,

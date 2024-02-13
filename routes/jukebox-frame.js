@@ -40,7 +40,6 @@ router.get("/podium-image", async (req, res) => {
     const offsetX = imageWidth / 2; // Adjust if necessary
     const offsetY = imageHeight / 4; // Adjust if necessary
     const returnString = `${queue} elements on the queue`;
-    console.log("the return string is: ", returnString);
     // Create an overlay SVG
     const svgOverlay = `
 <svg width="${imageWidth}" height="${imageHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -85,7 +84,6 @@ router.get("/podium-image", async (req, res) => {
     }</text>
 
 </svg>`;
-    console.log("right before the sharp", svgOverlay);
 
     sharp(imageBuffer)
       .composite([{ input: Buffer.from(svgOverlay), gravity: "northwest" }])
@@ -93,7 +91,6 @@ router.get("/podium-image", async (req, res) => {
       .toBuffer()
       .then((outputBuffer) => {
         // Set the content type to PNG and send the response
-        console.log("the output buffer is: ", outputBuffer);
         res.setHeader("Content-Type", "image/png");
         res.setHeader("Cache-Control", "max-age=10");
         res.send(outputBuffer);
