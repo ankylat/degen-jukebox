@@ -138,7 +138,6 @@ router.get("/future", async (req, res) => {
       where: { status: "future" },
       orderBy: { bidAmount: "desc" },
       include: { author: true },
-      take: 5,
     });
     res.json({ queue: queueItems });
   } catch (error) {
