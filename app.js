@@ -23,6 +23,7 @@ const limiter = rateLimit({
 // Routes
 const jukeboxRoute = require("./routes/jukebox-frame");
 const apiRoute = require("./routes/api");
+const farcasterRoute = require("./routes/farcaster");
 
 const app = express();
 app.use(cors());
@@ -42,7 +43,9 @@ const apiKeyMiddleware = (req, res, next) => {
 
 app.use("/jukebox", jukeboxRoute);
 app.use("/api", apiKeyMiddleware, apiRoute);
-theSource.checkSystem();
+app.use("/farcaster", farcasterRoute);
+
+//theSource.checkSystem();
 
 app.get("/", (req, res) => {
   res.send("hello world.\n\nall rights reserved: the gen radio");

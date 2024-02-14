@@ -89,7 +89,6 @@ router.post("/recommendation", async (req, res) => {
     try {
       const neynarResponse = await getUserInformationFromFid(authorFid);
       userPfp = neynarResponse.pfp.url;
-      console.log("the neynar response is: ", neynarResponse);
       username = neynarResponse.username;
     } catch (error) {
       userPfp =
