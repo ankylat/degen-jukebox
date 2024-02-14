@@ -209,7 +209,7 @@ router.get("/u/:fid/feed", async (req, res) => {
 router.get("/degen-channel-feed", async (req, res) => {
   try {
     const response = await axios.get(
-      `https://api.neynar.com/v2/farcaster/feed/channels?channel_ids=degen&with_recasts=true&with_replies=false&limit=10`,
+      `https://api.neynar.com/v2/farcaster/feed/channels?channel_ids=degen&with_recasts=true&with_replies=false&limit=88`,
       {
         headers: {
           api_key: process.env.NEYNAR_API_KEY,
