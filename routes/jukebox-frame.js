@@ -176,9 +176,6 @@ router.post("/", async (req, res) => {
     </html>
       `);
     }
-    console.log(
-      "here i should display on top of the image the % of the piece that is on the present that has elapsed"
-    );
     return res.status(200).send(`
   <!DOCTYPE html>
   <html>
