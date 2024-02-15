@@ -9,6 +9,7 @@ const {
   FeedType,
   FilterType,
 } = require("@neynar/nodejs-sdk");
+const jpAlgo = require("../lib/feedAlgorithm");
 
 const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
@@ -59,23 +60,6 @@ const generate_signature = async function (public_key) {
 
   return { deadline, signature };
 };
-
-router.get("/feed-by-fid/:fid", async (req, res) => {
-  try {
-    if (!req.params.fid)
-      return res.status(500).json({ message: "invalid fid" });
-    const url = `https://api.neynar.com/v2/farcaster/feed?feed_type=following&fid=${req.params.fid}&with_recasts=true&with_replies=true&limit=100`;
-    const response = await axios.get(url, {
-      headers: {
-        api_key: process.env.NEYNAR_API_KEY,
-      },
-    });
-    res.status(200).json({ feed: response.data.casts });
-  } catch (error) {
-    console.log("there was an error");
-    res.status(401).json({ message: "there was an error" });
-  }
-});
 
 router.post("/api/signer", async (req, res) => {
   try {
@@ -203,6 +187,19 @@ router.get("/u/:fid/feed", async (req, res) => {
     }
   } catch (error) {
     console.log("there was an error fetching the feed");
+  }
+});
+
+async function algorithmProcessing(algorithmProp, fid) {
+  return algorithmProp(fid);
+}
+
+router.get("/feed-by-fid/:fid", async (req, res) => {
+  try {
+    const feedForUser = await algorithmProcessing(jpAlgo, req.params.fid);
+    return res.status(200).json({ feed: feedForUser });
+  } catch (error) {
+    res.status(500).json({ message: "There was an error here." });
   }
 });
 

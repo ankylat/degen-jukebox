@@ -151,7 +151,7 @@ router.post("/", async (req, res) => {
         <meta name="fc:frame:image" content="${imageUrl}">
         <meta name="fc:frame:button:1" content="jukebox"> 
         <meta name="fc:frame:button:1:action" content="link">   
-        <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
+        <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}?fid=${req.body.untrustedData.fid}">     
         <meta name="fc:frame:button:2" content="queue">   
         <meta name="fc:frame:button:3" content="instructions"> 
         </head>
@@ -169,7 +169,7 @@ router.post("/", async (req, res) => {
       <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/degennnn.png">
       <meta name="fc:frame:button:1" content="jukebox"> 
       <meta name="fc:frame:button:1:action" content="link">   
-      <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
+      <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}?fid=${req.body.untrustedData.fid}">     
       <meta name="fc:frame:button:2" content="queue">   
       <meta name="fc:frame:button:3" content="instructions"> 
       </head>
@@ -188,7 +188,7 @@ router.post("/", async (req, res) => {
     <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
     <meta name="fc:frame:button:1" content="jukebox"> 
     <meta name="fc:frame:button:1:action" content="link">   
-    <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}">     
+    <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}?fid=${req.body.untrustedData.fid}">     
     <meta name="fc:frame:button:2" content="queue">   
     <meta name="fc:frame:button:3" content="instructions"> 
     </head>
