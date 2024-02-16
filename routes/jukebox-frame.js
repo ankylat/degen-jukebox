@@ -107,12 +107,17 @@ router.post("/podium-image", async (req, res) => {
   }
 });
 
-router.post("/added-music", async (req, res) => {
+router.post("/add-music", async (req, res) => {
   try {
+    console.log("inside the added music route", req.body);
     const fullUrl = req.protocol + "://" + req.get("host");
-    const videoUrl = req.body.inputText;
+    const videoUrl = req.body.untrustedData.inputText;
+    const presentRecommendation = await prisma.recommendation.findFirst({
+      where: { status: "present" },
+    });
     if (!videoUrl) return;
     function youtube_parser(url) {
+      console.log("inside the yourtube parser url", url);
       var regExp =
         /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
       var match = url.match(regExp);
@@ -120,6 +125,7 @@ router.post("/added-music", async (req, res) => {
     }
     const youtubeID = youtube_parser(videoUrl);
     if (youtubeID.length != 11) {
+      console.log("invalid id");
       return res.status(200).send(`
       <!DOCTYPE html>
       <html>
@@ -130,11 +136,12 @@ router.post("/added-music", async (req, res) => {
         <meta name="fc:frame" content="vNext">
         <meta name="fc:frame:post_url" content="${fullUrl}/jukebox/added-music">
         <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/wrong-link.png">
-        <meta name="fc:frame:input:text" content="youtube 🔗 · https://www.youtube.com/watch?v=owdva7V2M0o">
+        <meta name="fc:frame:input:text" content="youtube 🔗">
         <meta name="fc:frame:button:1" content="✅">
         </head>
       </html>`);
     } else {
+      console.log("valid id", presentRecommendation, fullUrl);
       return res.status(200).send(`
       <!DOCTYPE html>
       <html>
@@ -143,37 +150,15 @@ router.post("/added-music", async (req, res) => {
         <meta property="og:title" content="jukebox">
         <meta property="og:image" content="https://jpfraneto.github.io/images/gratitude.png">
         <meta name="fc:frame" content="vNext">
-        <meta name="fc:frame:post_url" content="${fullUrl}/jukebox/added-music">
+        <meta name="fc:frame:post_url" content="${fullUrl}/jukebox/add-music">
         <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/gratitude.png">
-        <meta name="fc:frame:input:text" content="youtube 🔗 · https://www.youtube.com/watch?v=owdva7V2M0o">
-        <meta name="fc:frame:button:1" content="✅">
+        <meta name="fc:frame:button:1" content="🎶"> 
+        <meta name="fc:frame:button:1:action" content="link">   
+        <meta name="fc:frame:button:1:target" content="${presentRecommendation.url}">     
         </head>
       </html>`);
     }
   } catch (error) {}
-});
-
-router.post("/add-music", async (req, res) => {
-  const fullUrl = req.protocol + "://" + req.get("host");
-  try {
-    return res.status(200).send(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>jukebox</title>
-        <meta property="og:title" content="jukebox">
-        <meta property="og:image" content="https://jpfraneto.github.io/images/add-music.png">
-        <meta name="fc:frame" content="vNext">
-        <meta name="fc:frame:post_url" content="${fullUrl}/jukebox/add-music">
-        <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/add-music.png">
-        <meta name="fc:frame:input:text" content="youtube 🔗 · https://www.youtube.com/watch?v=owdva7V2M0o">
-        <meta name="fc:frame:button:1" content="✅">
-        </head>
-      </html>`);
-  } catch (error) {
-    console.log("there was an error here", error);
-    res.status(500).json({ message: "there was an error here" });
-  }
 });
 
 router.get("/", async (req, res) => {
@@ -192,7 +177,6 @@ router.get("/", async (req, res) => {
 
       <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
       <meta name="fc:frame:button:1" content="ಸ್ವಾಗತ">
-
     </head>
     </html>
     `);
