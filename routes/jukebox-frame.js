@@ -208,8 +208,6 @@ router.post("/", async (req, res) => {
         <meta name="fc:frame:button:1" content="🎶"> 
         <meta name="fc:frame:button:1:action" content="link">   
         <meta name="fc:frame:button:1:target" content="${presentRecommendation.url}">     
-        <meta name="fc:frame:button:2" content="📜">  
-        <meta name="fc:frame:button:3" content="➕"> 
         </head>
       </html>
         `);
@@ -244,8 +242,6 @@ router.post("/", async (req, res) => {
     <meta name="fc:frame:button:1" content="🎶"> 
     <meta name="fc:frame:button:1:action" content="link">   
     <meta name="fc:frame:button:1:target" content="${presentRecommendation.url}">     
-    <meta name="fc:frame:button:2" content="📜">  
-    <meta name="fc:frame:button:3" content="➕"> 
     </head>
   </html>
     `);
