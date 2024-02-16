@@ -15,8 +15,9 @@ const {
 
 const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
-router.get("/podium-image", async (req, res) => {
+router.post("/podium-image", async (req, res) => {
   try {
+    console.log("iiiin here");
     // Fetch the top 5 future recommendations based on bid amount
     const podium = await prisma.recommendation.findMany({
       where: { status: "future" },
@@ -27,11 +28,12 @@ router.get("/podium-image", async (req, res) => {
     const queue = await prisma.recommendation.count({
       where: { status: "future" },
     });
-
+    console.log("in here");
     const response = await axios({
-      url: "https://jpfraneto.github.io/images/the-gen-queue3.png",
+      url: "https://jpfraneto.github.io/images/the-cosmic-festival.jpeg",
       responseType: "arraybuffer",
     });
+    console.log("the response hjere is: ", response);
     const a = "";
     const imageBuffer = Buffer.from(response.data, "utf-8");
     const metadata = await sharp(imageBuffer).metadata();
@@ -105,6 +107,75 @@ router.get("/podium-image", async (req, res) => {
   }
 });
 
+router.post("/added-music", async (req, res) => {
+  try {
+    const fullUrl = req.protocol + "://" + req.get("host");
+    const videoUrl = req.body.inputText;
+    if (!videoUrl) return;
+    function youtube_parser(url) {
+      var regExp =
+        /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+      var match = url.match(regExp);
+      return match && match[7].length == 11 ? match[7] : false;
+    }
+    const youtubeID = youtube_parser(videoUrl);
+    if (youtubeID.length != 11) {
+      return res.status(200).send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>jukebox</title>
+        <meta property="og:title" content="jukebox">
+        <meta property="og:image" content="https://jpfraneto.github.io/images/wrong-link.png">
+        <meta name="fc:frame" content="vNext">
+        <meta name="fc:frame:post_url" content="${fullUrl}/jukebox/added-music">
+        <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/wrong-link.png">
+        <meta name="fc:frame:input:text" content="youtube 🔗 · https://www.youtube.com/watch?v=owdva7V2M0o">
+        <meta name="fc:frame:button:1" content="✅">
+        </head>
+      </html>`);
+    } else {
+      return res.status(200).send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>jukebox</title>
+        <meta property="og:title" content="jukebox">
+        <meta property="og:image" content="https://jpfraneto.github.io/images/gratitude.png">
+        <meta name="fc:frame" content="vNext">
+        <meta name="fc:frame:post_url" content="${fullUrl}/jukebox/added-music">
+        <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/gratitude.png">
+        <meta name="fc:frame:input:text" content="youtube 🔗 · https://www.youtube.com/watch?v=owdva7V2M0o">
+        <meta name="fc:frame:button:1" content="✅">
+        </head>
+      </html>`);
+    }
+  } catch (error) {}
+});
+
+router.post("/add-music", async (req, res) => {
+  const fullUrl = req.protocol + "://" + req.get("host");
+  try {
+    return res.status(200).send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>jukebox</title>
+        <meta property="og:title" content="jukebox">
+        <meta property="og:image" content="https://jpfraneto.github.io/images/add-music.png">
+        <meta name="fc:frame" content="vNext">
+        <meta name="fc:frame:post_url" content="${fullUrl}/jukebox/add-music">
+        <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/add-music.png">
+        <meta name="fc:frame:input:text" content="youtube 🔗 · https://www.youtube.com/watch?v=owdva7V2M0o">
+        <meta name="fc:frame:button:1" content="✅">
+        </head>
+      </html>`);
+  } catch (error) {
+    console.log("there was an error here", error);
+    res.status(500).json({ message: "there was an error here" });
+  }
+});
+
 router.get("/", async (req, res) => {
   try {
     const fullUrl = req.protocol + "://" + req.get("host");
@@ -115,12 +186,12 @@ router.get("/", async (req, res) => {
     <head>
       <title>degen jukebox</title>
       <meta property="og:title" content="degen jukebox">
-      <meta property="og:image" content="https://jpfraneto.github.io/images/the-gen-radioo2.png">
+      <meta property="og:image" content="https://jpfraneto.github.io/images/portada.png">
       <meta name="fc:frame" content="vNext">
-      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/the-gen-radioo2.png">
+      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/portada.png">
 
       <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
-      <meta name="fc:frame:button:1" content="time to vibe">
+      <meta name="fc:frame:button:1" content="ಸ್ವಾಗತ">
 
     </head>
     </html>
@@ -132,6 +203,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  console.log("inside the post route");
   const fullUrl = req.protocol + "://" + req.get("host");
   const buttonIndex = req.body.untrustedData.buttonIndex.toString();
   const presentRecommendation = await prisma.recommendation.findFirst({
@@ -149,29 +221,28 @@ router.post("/", async (req, res) => {
         <meta property="og:image" content="${imageUrl}">
         <meta name="fc:frame" content="vNext">
         <meta name="fc:frame:image" content="${imageUrl}">
-        <meta name="fc:frame:button:1" content="jukebox"> 
+        <meta name="fc:frame:button:1" content="🎶"> 
         <meta name="fc:frame:button:1:action" content="link">   
-        <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}?fid=${req.body.untrustedData.fid}">     
-        <meta name="fc:frame:button:2" content="queue">   
-        <meta name="fc:frame:button:3" content="instructions"> 
+        <meta name="fc:frame:button:1:target" content="${presentRecommendation.url}">     
+        <meta name="fc:frame:button:2" content="📜">  
+        <meta name="fc:frame:button:3" content="➕"> 
         </head>
       </html>
         `);
     } else if (buttonIndex == "3") {
+      console.log("display for adding music");
       return res.status(200).send(`
     <!DOCTYPE html>
     <html>
     <head>
       <title>jukebox</title>
       <meta property="og:title" content="jukebox">
-      <meta property="og:image" content="https://jpfraneto.github.io/images/degennnn.png">
+      <meta property="og:image" content="https://jpfraneto.github.io/images/add-music.png">
       <meta name="fc:frame" content="vNext">
-      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/degennnn.png">
-      <meta name="fc:frame:button:1" content="jukebox"> 
-      <meta name="fc:frame:button:1:action" content="link">   
-      <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}?fid=${req.body.untrustedData.fid}">     
-      <meta name="fc:frame:button:2" content="queue">   
-      <meta name="fc:frame:button:3" content="instructions"> 
+      <meta name="fc:frame:post_url" content="${fullUrl}/jukebox/add-music">
+      <meta name="fc:frame:image" content="https://jpfraneto.github.io/images/add-music.png">
+      <meta name="fc:frame:input:text" content="youtube 🔗">
+      <meta name="fc:frame:button:1" content="✅">
       </head>
     </html>
       `);
@@ -186,11 +257,11 @@ router.post("/", async (req, res) => {
     <meta name="fc:frame" content="vNext">
     <meta name="fc:frame:image" content="${presentRecommendation.placeholderImageUrl}">
     <meta name="fc:frame:post_url" content="${fullUrl}/jukebox">
-    <meta name="fc:frame:button:1" content="jukebox"> 
+    <meta name="fc:frame:button:1" content="🎶"> 
     <meta name="fc:frame:button:1:action" content="link">   
-    <meta name="fc:frame:button:1:target" content="${process.env.FRONTEND_ROUTE}?fid=${req.body.untrustedData.fid}">     
-    <meta name="fc:frame:button:2" content="queue">   
-    <meta name="fc:frame:button:3" content="instructions"> 
+    <meta name="fc:frame:button:1:target" content="${presentRecommendation.url}">     
+    <meta name="fc:frame:button:2" content="📜">  
+    <meta name="fc:frame:button:3" content="➕"> 
     </head>
   </html>
     `);

@@ -45,7 +45,7 @@ app.use("/jukebox", jukeboxRoute);
 app.use("/api", apiKeyMiddleware, apiRoute);
 app.use("/farcaster", farcasterRoute);
 
-theSource.checkSystem();
+// theSource.checkSystem();
 
 app.get("/", (req, res) => {
   res.send("hello world.\n\nall rights reserved: the gen radio");
